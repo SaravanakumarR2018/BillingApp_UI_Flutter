@@ -75,7 +75,6 @@ class Bill {
 
 class _BillingPageState extends State<BillingPage> {
   List<Widget> _orderSheet;
-  int _orderSheetCount = 0;
   Bill currentBill;
   List<BillTextController> textContr;
 
@@ -83,7 +82,11 @@ class _BillingPageState extends State<BillingPage> {
     _orderSheet = List<Widget>();
     textContr = List<BillTextController>();
   }
-
+  _reInit() {
+    _orderSheet.clear();
+    textContr.clear();
+    _add();
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -116,7 +119,7 @@ class _BillingPageState extends State<BillingPage> {
     );
   }
 
-  _sendBillToServer() {
+  _sendBillToServer() async {
     var val = _validateLastEntry();
     if (!val) {
       return;
@@ -136,20 +139,15 @@ class _BillingPageState extends State<BillingPage> {
       currentBill.DishRows.add(_dishEntry);
     }
 
-    _addBillApiCall(currentBill).then((res) {
+    var validator = await _addBillApiCall(currentBill);
+    if (validator.result) {
       print("add bill Success");
-      if (res.result == false) {
-        _showDialog("Add Bill to Server", res.validationErr);
-
-        return;
-      } else {
-        print("add bill Success");
-        // TO DO: Navigate to different page
-        _showDialogReInitBillOnSuccess("Add Bill to Server", "SUCCESS");
-
-        return;
-      }
-    });
+      _showDialog("Add Bill to Server", "SUCCESS");
+      _reInit();
+    } else {
+      print("Failure: add bill");
+      _showDialog("Add Bill to Server", validator.validationErr);
+    }
 
   }
   void _showDialogReInitBillOnSuccess(String title, String validationErrString) {
@@ -309,6 +307,7 @@ class _BillingPageState extends State<BillingPage> {
   void _add() {
     var val = _validateLastEntry();
     if (!val) {
+      print("Validation failed for last row of Bill");
       return;
     }
     print('Invoking add function');
@@ -317,11 +316,6 @@ class _BillingPageState extends State<BillingPage> {
     print('After Adding');
     int orderSheetCurrentIndex = textContr.length - 1;
     print('before adding to order sheet');
-    print(Uuid().v5("saravana.k.r@gmail.com", "Glaziers"));
-    print(Uuid().v5("saravana.k.r@gmail.com", "Glaziers"));
-    print(Uuid().v1());
-    print(Uuid().v1());
-    print("before add");
     _orderSheet = List.from(_orderSheet)
       ..add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
