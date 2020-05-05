@@ -93,13 +93,19 @@ class _BillingPageState extends State<BillingPage> {
     super.initState();
     _add();
   }
-
+  __historyOfBills() {
+    _showDialog("Bill History for Restaurant: " + globalVariable.currentRestaurantName, "Will be available in next release");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Restarant: ' + globalVariable.currentRestaurantName),
-        actions: <Widget>[IconButton(icon: Icon(Icons.menu), onPressed: () {})],
+        actions: <Widget>[IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: __historyOfBills,
+            )
+        ],
       ),
       body: ListView(
         children: _orderSheet,
@@ -150,28 +156,7 @@ class _BillingPageState extends State<BillingPage> {
     }
 
   }
-  void _showDialogReInitBillOnSuccess(String title, String validationErrString) {
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text(title),
-          content: new Text(validationErrString),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   void _showDialog(String title, String validationErrString) {
     // flutter defined function
@@ -336,7 +321,7 @@ class _BillingPageState extends State<BillingPage> {
                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            flex: 9,
+            flex: 7,
           ),
           Expanded(
             child: Padding(
@@ -353,7 +338,7 @@ class _BillingPageState extends State<BillingPage> {
                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            flex: 3,
+            flex: 5,
           ),
           Expanded(
             child: Padding(
@@ -370,7 +355,7 @@ class _BillingPageState extends State<BillingPage> {
                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            flex: 3,
+            flex: 5,
           ),
           Expanded(
             child: Padding(
@@ -387,7 +372,7 @@ class _BillingPageState extends State<BillingPage> {
                         borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            flex: 3,
+            flex: 5,
           ),
         ],
       ));
