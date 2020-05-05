@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:billingappui/utilities/constants.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:billingappui/global_variables.dart';
+import 'package:billingappui/addRestaurantList.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,15 +13,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   final emailController = TextEditingController();
   final addNewRestaurantController = TextEditingController();
-  List restaurant_list;
-  final restaurant_name = 'name';
-  final restaurant_list_url = 'http://ec2-3-135-20-2.us-east-2.compute.amazonaws.com/restaurant/restaurantlist';
-  final addRestaurantURL = 'http://ec2-3-135-20-2.us-east-2.compute.amazonaws.com/restaurant/addnewrestaurant';
-  String current_email;
-  String current_restaurant;
-  final httpStatusOk = 200;
-  String SUCCESS = 'SUCCESS';
-  String FAILURE = 'FAILURE';
 
   Widget _buildEmailTF() {
     return Column(
@@ -134,207 +125,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  /*
-  _pushSaved () {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text(emailController.text),
-        );
-      },
-    );
-  }
-  */
-  _pushSaved() async {
-    current_email = emailController.text;
-    await _getRestaurantsList(restaurant_list_url , current_email);
+  _pushLoginButtonWidget() async {
+    globalVariable.currentEmail = emailController.text;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         // Add 20 lines from here...
-        builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Available Restaurants for ' + current_email),
-            ),
-            body: _getRestaurantListWithTextbox(),
-          );
-        },
+        builder: (BuildContext context) => new AddRestaurantList()
       ),
     );
 
-    print('pushSaved' );
-    print(restaurant_list);
+    print('push Login Button' );
   }
 
- _getRestaurantListWithTextbox () {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (value) {
 
-              },
-              controller: addNewRestaurantController,
-              decoration: InputDecoration(
-                  //labelText: "Search",
-                  hintText: "Add New Restaurant",
-                  prefixIcon: Icon(Icons.restaurant),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-            ),
-          ),
-          RaisedButton(
-            color: Colors.blueGrey,
-            onPressed: _pressButtonAddRestaurant,
-            child: Text('Submit'),
-          ),
-          Expanded(
-            child: _getRestaurants(),
-          ),
-        ],
-      ),
-    );
-
-  }
-
-  _pressButtonAddRestaurant() async {
-    var restaurant = addNewRestaurantController.text;
-    print("Add new restaurant Button pressed: New Restaurant" + restaurant);
-    var result = await _addNewRestaurant(restaurant);
-    _showDialog(restaurant, result);
-    await _getRestaurantsList(restaurant_list_url, current_email);
-  }
-  void _showDialog(String restaurant_name, String result) {
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Add Restaurant: " + restaurant_name),
-          content: new Text(result),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<String> _addNewRestaurant (String newRestaurant) async {
-    try {
-      var response = await http.post(
-        //encode the url
-          Uri.encodeFull(addRestaurantURL),
-          //only accept json response
-          headers: {"Accept": "application/json", "Content-type":"application/json"},
-          body: jsonEncode(<String, String>{
-            'Email': current_email,
-            'RestaurantName': newRestaurant
-          }),
-      );
-      if (response.statusCode == httpStatusOk) {
-        print("Added New Restaurant");
-        return SUCCESS;
-      } else {
-        print('Could not add New Restaurant Response Code');
-        return FAILURE;
-      }
-    } catch (e) {
-      print('Could not add New Restaurant: Exception thrown');
-      print(e);
-      return SUCCESS;
-    }
-  }
-  Future<String> _getRestaurantsList(String url, email) async{
-
-    print("getRestaurantsList: Obtaining from url" + url);
-    try {
-      var response = await http.get(
-        //encode the url
-          Uri.encodeFull(url),
-          //only accept json response
-          headers: {"Email": email, "Accept": "application/json"}
-      );
-
-      if (response.statusCode == httpStatusOk) {
-        setState(() {
-          // ignore: deprecated_member_use
-          var convertDataToJson = json.decode(response.body);
-          restaurant_list= convertDataToJson;
-          print("Success from Server: 200: : Restaurant list: ");
-          print(restaurant_list[0][restaurant_name]);
-          print(restaurant_list);
-        });
-        return "Success";
-      } else {
-        setState(() {
-          var convertDataToJson = json.decode('[{"' + restaurant_name + '": "No Restaurants available: Add new from the text box"}]');
-          restaurant_list= convertDataToJson;
-          print("Failure from Server: Restaurant list");
-          print(restaurant_list);
-        });
-        return "Failure";
-      }
-    } catch(e) {
-      print("Inside Catch block");
-      print(e);
-      setState(() {
-        var convertDataToJson = json.decode('[{"' + restaurant_name + '": "Issue with Server Connectivity"}]');
-        restaurant_list= convertDataToJson;
-        print(restaurant_list[0][restaurant_name]);
-        print("Error Exception from Server: Restaurant list");
-        print(restaurant_list);
-      });
-      return "Failure";
-    }
-  }
-  _getRestaurants() {
-    print("_getRestaurants: list view :restaurant_list length: ");
-    int len = restaurant_list == null?0:restaurant_list.length;
-    for (var i =0 ; i< len; i++) {
-      print(restaurant_list[i][restaurant_name]);
-    }
-    return ListView.builder(
-      itemCount: restaurant_list == null? 0:restaurant_list.length,
-      itemBuilder: (BuildContext context,int index){
-        return Container(
-          child: Center(
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Card(
-                    color: Colors.green,
-                    child: Container(
-                      child: Text(restaurant_list[index][restaurant_name]),
-                      padding: EdgeInsets.all(20.0),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
   Widget _buildLoginBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: _pushSaved,
+        onPressed: _pushLoginButtonWidget,
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
