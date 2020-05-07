@@ -89,6 +89,7 @@ class _BillingPageState extends State<BillingPage> {
   String submitEditBillUUID = "";
   TextEditingController customerNameCntr;
   TextEditingController tableNameCntr;
+  String header = "New Bill";
 
   _BillingPageState() {
     _orderSheet = List<Widget>();
@@ -132,8 +133,9 @@ class _BillingPageState extends State<BillingPage> {
       submitEditBillUUID = globalVariable.editableList[FIRSTELEMENT]["uuid"];
       print("submitEditBillUUID $submitEditBillUUID");
       globalVariable.editBill = false;
+      header = "Edit Bill: " + globalVariable.editableList[FIRSTELEMENT]["customer_id"];
       globalVariable.editableList.clear();
-
+      print(header);
       setState(() {
 
       });
@@ -182,7 +184,8 @@ class _BillingPageState extends State<BillingPage> {
     print(_orderSheet.length);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Restarant: ' + globalVariable.currentRestaurantName),
+        title: Text(globalVariable.currentRestaurantName + ": " + header),
+        backgroundColor: Colors.green,
         actions: <Widget>[IconButton(
             icon: Icon(Icons.menu),
             onPressed: _historyOfBillsPage,
@@ -208,20 +211,20 @@ class _BillingPageState extends State<BillingPage> {
           children: <Widget>[
             FloatingActionButton(
               onPressed: _deleteLastRowOfBill,
-              heroTag: null,
+              heroTag: "deleteRow",
               backgroundColor: Colors.green,
               child: Icon(Icons.delete),
             ),
             FloatingActionButton.extended(
               onPressed: _sendBillToServer,
               label: Text('Submit'),
-              heroTag: null,
+              heroTag: "SubmitToServer",
               icon: Icon(Icons.save),
               backgroundColor: Colors.green,
             ),
             FloatingActionButton(
               onPressed: () { _add(); setState(() {});},
-              heroTag: null,
+              heroTag: "AddRowsToBill",
               backgroundColor: Colors.green,
               child: Icon(Icons.add),
             )
@@ -282,7 +285,8 @@ class _BillingPageState extends State<BillingPage> {
     if (validator.result) {
       print("add bill Success");
       submitEditBillUUID = "";
-      _showDialog("Save Bill to Server", "SUCCESS\n\n\nCheck saved Bills pressing the top right button");
+      header = "Add Bill";
+      _showDialog("Save Bill to Server", "SUCCESS\n\n\nCheck saved Bills using the top right button");
       _reInit();
     } else {
       print("Failure: add bill");
@@ -480,7 +484,9 @@ class _BillingPageState extends State<BillingPage> {
                       hintText: "Optional: Customer Name",
                       //prefixIcon: Icon(Icons.room_service),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                      borderSide: BorderSide(color: Colors.green)),
+                  ),
                 ),
               ),
               flex: 7,

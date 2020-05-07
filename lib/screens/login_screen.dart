@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
+
             style: TextStyle(
               color: Colors.white,
               fontFamily: 'OpenSans',
@@ -153,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Text(
           'LOGIN',
           style: TextStyle(
-            color: Color(0xFF527DAA),
+            color: Colors.green,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -275,10 +276,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFF73AEF5),
-                      Color(0xFF61A4F1),
-                      Color(0xFF478DE0),
-                      Color(0xFF398AE5),
+                      Colors.green[400],
+                      Colors.green[500],
+                      Colors.green[600],
+                      Colors.green[700],
                     ],
                     stops: [0.1, 0.4, 0.7, 0.9],
                   ),
@@ -296,6 +297,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
+                        'Your Billing App',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'OpenSans',
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
                         'Sign In',
                         style: TextStyle(
                           color: Colors.white,
@@ -311,10 +321,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       _buildPasswordTF(),
                       _buildForgotPasswordBtn(),
+                      /*
                       _buildRememberMeCheckbox(),
+                       */
                       _buildLoginBtn(),
+                      /*
                       _buildSignInWithText(),
                       _buildSocialBtnRow(),
+
+                       */
                       _buildSignupBtn(),
                     ],
                   ),

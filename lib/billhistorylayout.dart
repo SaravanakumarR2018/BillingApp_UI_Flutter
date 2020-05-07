@@ -372,20 +372,13 @@ class ListItemState extends State<ListItem> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    border: Border.all(color: Colors.green[700])),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
+                child:  Card(
                       color: Colors.green,
                       child: ListTile(
                         title: Text(customerID),
                         subtitle: Text('ID'),
                       )
                   ),
-                )
             ),
           ),
           flex: 3,
@@ -395,20 +388,14 @@ class ListItemState extends State<ListItem> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    border: Border.all(color: Colors.green[700])),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
+                child: Card(
                       color: Colors.green,
                       child: ListTile(
                         title: Text(customerName),
                         subtitle: Text('Customer Name'),
                       )
-                  ),
-                )),
+                )
+            ),
           ),
           flex: 8,
         ),
@@ -417,20 +404,14 @@ class ListItemState extends State<ListItem> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    border: Border.all(color: Colors.green[700])),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
+                child: Card(
                       color: Colors.green,
                       child: ListTile(
                         title: Text(tableName),
                         subtitle: Text('Table Name'),
                       )
-                  ),
-                )),
+                  )
+            ),
           ),
           flex: 5,
         ),

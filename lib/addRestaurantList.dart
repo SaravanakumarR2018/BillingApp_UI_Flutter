@@ -10,25 +10,9 @@ class AddRestaurantList extends StatefulWidget {
   @override
   _AddRestaurantList createState() => _AddRestaurantList();
 }
-/*
+
 class _AddRestaurantList extends State<AddRestaurantList> {
 
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Available Restaurants for ' + globalVariable.currentEmail),
-      ),
-      body: Container (
-        child: Text ("Simple"),
-      ),
-    );
-  }
-}
-*/
-class _AddRestaurantList extends State<AddRestaurantList> {
-  
   final emailController = TextEditingController();
   final addNewRestaurantController = TextEditingController();
   List restaurantList;
@@ -55,7 +39,8 @@ class _AddRestaurantList extends State<AddRestaurantList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Available Restaurants for ' + globalVariable.currentEmail),
+        title: Text(globalVariable.currentEmail),
+        backgroundColor: Colors.green,
       ),
       body: _getRestaurantListWidgetWithTextBox(),
     );
@@ -87,10 +72,52 @@ class _AddRestaurantList extends State<AddRestaurantList> {
                       borderRadius: BorderRadius.all(Radius.circular(25.0)))),
             ),
           ),
-          RaisedButton(
-            color: Colors.blueGrey,
-            onPressed: _pressButtonAddRestaurant,
-            child: Text('Submit'),
+
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children : [
+
+                    RaisedButton(
+                      color: Colors.green,
+                      onPressed: _pressButtonAddRestaurant,
+                       child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white),
+                       ),
+
+                )
+              ]
+          ),
+          Container(
+            child: Center(
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Card (
+                        color: Colors.green,
+                        /*
+                            decoration: BoxDecoration (
+                              color: Colors.green[200],
+                              border: Border(bottom: BorderSide()),
+                            ),
+
+                             */
+                        child: ListTile (
+                          title: Text(
+                            "Your Restaurants",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white,
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 25.0),
+                        )
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
           Expanded(
             child: new ListView.builder(
@@ -102,18 +129,35 @@ class _AddRestaurantList extends State<AddRestaurantList> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          Container (
+                          Card (
+                            color: Colors.green[200],
+                            /*
                             decoration: BoxDecoration (
-                              color: Colors.green,
+                              color: Colors.green[200],
+                              border: Border(bottom: BorderSide()),
                             ),
+
+                             */
                             child: ListTile (
-                                leading: const Icon(Icons.restaurant_menu),
-                                title: Text(restaurantList[index][restaurantNameJSONField]),
+                                leading: const Icon(
+                                    Icons.restaurant_menu,
+                                    color: Colors.black,
+                                ),
+                                title: Text(
+                                    restaurantList[index][restaurantNameJSONField],
+                                  style: TextStyle(color: Colors.black),
+                                ),
                                 onTap: () {
                                   globalVariable.currentRestaurantName =
                                   restaurantList[index][restaurantNameJSONField];
                                   _moveToBillingPage();
-                                }
+                                },
+                                trailing: Icon(
+                                    Icons.keyboard_arrow_right,
+                                  color: Colors.green[900],
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 25.0),
+                              selected: true,
                             )
                           )
                         ],
