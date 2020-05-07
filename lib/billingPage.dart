@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:billingappui/billHistory.dart';
 import 'package:billingappui/global_variables.dart';
 import 'package:flutter/material.dart';
@@ -82,16 +84,15 @@ class Bill {
 
 class _BillingPageState extends State<BillingPage> {
   List<Widget> _orderSheet;
+  List<BillTextController> billRowEntryController;
   Bill currentBill;
   String submitEditBillUUID = "";
   TextEditingController customerNameCntr;
   TextEditingController tableNameCntr;
 
-  List<BillTextController> textContr;
-
   _BillingPageState() {
     _orderSheet = List<Widget>();
-    textContr = List<BillTextController>();
+    billRowEntryController = List<BillTextController>();
     customerNameCntr = TextEditingController();
     tableNameCntr = TextEditingController();
   }
@@ -99,7 +100,7 @@ class _BillingPageState extends State<BillingPage> {
     customerNameCntr.clear();
     tableNameCntr.clear();
     _orderSheet.clear();
-    textContr.clear();
+    billRowEntryController.clear();
     _add();
     setState(() {
 
@@ -140,11 +141,35 @@ class _BillingPageState extends State<BillingPage> {
 
      print("Bill History page popped");
   }
+  _deleteLastRowOfBill() {
+    var billRowEntryCurrentIndex = billRowEntryController.length;
+    print("Entering _deleteLastRowOfBill Length $billRowEntryCurrentIndex");
+    if (billRowEntryCurrentIndex > 1) {
+      print("_deleteLastRowOfBill: length greater than 1");
+      _orderSheet.removeLast();
+      billRowEntryController.removeLast();
+      var ordersheetlength = _orderSheet.length;
+      var billRowEntrylength = billRowEntryController.length;
+      print("_deleteLastRowOfBill _orderSheet length $ordersheetlength"
+          "bill row length $billRowEntrylength ");
+
+    } else if (billRowEntryCurrentIndex == 1){
+      print("_deleteLastRowOfBill: length is equal than 1");
+      billRowEntryController[0]._dishName.clear();
+      billRowEntryController[0]._quantity.clear();
+      billRowEntryController[0]._price.clear();
+      billRowEntryController[0]._taxPercent.clear();
+
+    }
+    setState(() {
+
+    });
+  }
   _setEditFields() {
     customerNameCntr.clear();
     tableNameCntr.clear();
     _orderSheet.clear();
-    textContr.clear();
+    billRowEntryController.clear();
 
     for (int i = 0; i < globalVariable.editableList.length; i++) {
       _add();
@@ -153,6 +178,8 @@ class _BillingPageState extends State<BillingPage> {
   }
   @override
   Widget build(BuildContext context) {
+    print("Order sheet length while building ");
+    print(_orderSheet.length);
     return Scaffold(
       appBar: AppBar(
         title: Text('Restarant: ' + globalVariable.currentRestaurantName),
@@ -162,15 +189,54 @@ class _BillingPageState extends State<BillingPage> {
             )
         ],
       ),
-      body: ListView(
+      body: new ListView.builder (
+          itemCount: _orderSheet.length,
+          itemBuilder: (BuildContext ctxt, int index) {
+            return _orderSheet[index];
+          }
+      ),
+      /*ListView(
+
         children: _orderSheet,
       ),
-      floatingActionButton: FloatingActionButton(
+
+       */
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            FloatingActionButton(
+              onPressed: _deleteLastRowOfBill,
+              heroTag: null,
+              backgroundColor: Colors.green,
+              child: Icon(Icons.delete),
+            ),
+            FloatingActionButton.extended(
+              onPressed: _sendBillToServer,
+              label: Text('Submit'),
+              heroTag: null,
+              icon: Icon(Icons.save),
+              backgroundColor: Colors.green,
+            ),
+            FloatingActionButton(
+              onPressed: () { _add(); setState(() {});},
+              heroTag: null,
+              backgroundColor: Colors.green,
+              child: Icon(Icons.add),
+            )
+          ],
+        ),
+      ),
+      /*
+      FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.blue,
         onPressed: () { _add(); setState(() {});},
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+       */
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      /*
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         child: RaisedButton(
@@ -179,6 +245,7 @@ class _BillingPageState extends State<BillingPage> {
           child: Text('Submit'),
         ),
       ),
+      */
     );
   }
 
@@ -199,7 +266,7 @@ class _BillingPageState extends State<BillingPage> {
       currentBill.UUID = Uuid().v1();
     }
     var i = 0;
-    for (var entry in textContr) {
+    for (var entry in billRowEntryController) {
       var _dishEntry = DishEntry();
 
       _dishEntry.DishName = entry._dishName.text;
@@ -215,11 +282,11 @@ class _BillingPageState extends State<BillingPage> {
     if (validator.result) {
       print("add bill Success");
       submitEditBillUUID = "";
-      _showDialog("Add Bill to Server", "SUCCESS");
+      _showDialog("Save Bill to Server", "SUCCESS\n\n\nCheck saved Bills pressing the top right button");
       _reInit();
     } else {
       print("Failure: add bill");
-      _showDialog("Add Bill to Server", validator.validationErr);
+      _showDialog("Save Bill to Server", validator.validationErr + "\n\n\nCheck saved Bills pressing the top right button");
     }
 
   }
@@ -252,10 +319,10 @@ class _BillingPageState extends State<BillingPage> {
     String errStr = "";
     var isValid = true;
     print("validateLastBillEntry: Index: " + index.toString() );
-    var _dishName = textContr[index]._dishName.text;
-    var _quantity = textContr[index]._quantity.text;
-    var _price = textContr[index]._price.text;
-    var _taxPercent = textContr[index]._taxPercent.text;
+    var _dishName = billRowEntryController[index]._dishName.text;
+    var _quantity = billRowEntryController[index]._quantity.text;
+    var _price = billRowEntryController[index]._price.text;
+    var _taxPercent = billRowEntryController[index]._taxPercent.text;
     print(" Quantity " + _quantity + " Price " + _price + " Tax Percent " + _taxPercent);
     if (_dishName == "") {
       errStr += "Dish Name cannot be empty: \n";
@@ -320,14 +387,14 @@ class _BillingPageState extends State<BillingPage> {
 
   bool _validateLastEntry() {
 
-    if (textContr.length >= 1) {
-      var validator = validateLastBillEntry(textContr.length - 1);
+    if (billRowEntryController.length >= 1) {
+      var validator = validateLastBillEntry(billRowEntryController.length - 1);
       if (!validator.result) {
         print("FAILED: Validation last entry: " + validator.validationErr);
         _showDialog("Error: Bill: Last Row", validator.validationErr);
         return false;
       }
-      print("SUCCESS: Validation last entry: Index: "+ (textContr.length - 1).toString() + " " + validator.validationErr);
+      print("SUCCESS: Validation last entry: Index: "+ (billRowEntryController.length - 1).toString() + " " + validator.validationErr);
     }
 
     return true;
@@ -344,7 +411,7 @@ class _BillingPageState extends State<BillingPage> {
           headers: {"Accept": "application/json", "Content-type":"application/json"},
           //only accept json response
           body: jsonEncode(currentBill.toJson())
-      );
+      ).timeout(const Duration(seconds: 4));
 
       if (response.statusCode == globalVariable.httpStatusOk) {
         errStr = "SUCCESS: ADD Current Bill to Server: " +
@@ -365,20 +432,23 @@ class _BillingPageState extends State<BillingPage> {
             response.statusCode.toString();
         returnValue = false;
       }
-    } catch (e) {
-      errStr = "EXCEPTION: ADD Current Bill to Server: " +
-          currentBill.UUID +
-          " " +
-          currentBill.Email +
-          " " +
-          currentBill.RestaurantName +
-          "Exception: " +
-          e;
+    } on TimeoutException catch (e) {
+      errStr = "TIMEOUT FAILURE: CHECK INTERNET CONNECTION:\n";
       returnValue = false;
+    } catch(e) {
+        errStr = "EXCEPTION: ADD Current Bill to Server: " +
+            currentBill.UUID +
+            " " +
+            currentBill.Email +
+            " " +
+            currentBill.RestaurantName +
+            "Exception: " +
+            e;
+        returnValue = false;
+      }
+      print(errStr);
+      return Validation(errStr, returnValue);
     }
-    print(errStr);
-    return Validation(errStr, returnValue);
-  }
 
   void _add() {
     var val = _validateLastEntry();
@@ -387,12 +457,12 @@ class _BillingPageState extends State<BillingPage> {
       return;
     }
     print('Invoking add function');
-    textContr.add(BillTextController());
+    billRowEntryController.add(BillTextController());
 
     print('After Adding');
-    int orderSheetCurrentIndex = textContr.length - 1;
+    int billEntryCurrentIndex = billRowEntryController.length - 1;
     print('before adding to order sheet');
-    if (orderSheetCurrentIndex == 0) {
+    if (billEntryCurrentIndex == 0) {
       _orderSheet = List.from(_orderSheet)
         ..add(Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -436,9 +506,9 @@ class _BillingPageState extends State<BillingPage> {
         );
       if (globalVariable.editBill) {
         tableNameCntr.text =
-        globalVariable.editableList[orderSheetCurrentIndex]["table_name"];
+        globalVariable.editableList[billEntryCurrentIndex]["table_name"];
         customerNameCntr.text =
-        globalVariable.editableList[orderSheetCurrentIndex]["customer_name"];
+        globalVariable.editableList[billEntryCurrentIndex]["customer_name"];
       }
     }
     _orderSheet = List.from(_orderSheet)
@@ -452,7 +522,7 @@ class _BillingPageState extends State<BillingPage> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {},
-                controller: textContr[orderSheetCurrentIndex]._dishName,
+                controller: billRowEntryController[billEntryCurrentIndex]._dishName,
                 decoration: InputDecoration(
                     labelText: "Dish",
                     hintText: "Dish Name",
@@ -469,7 +539,7 @@ class _BillingPageState extends State<BillingPage> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 onChanged: (value) {},
-                controller: textContr[orderSheetCurrentIndex]._quantity,
+                controller: billRowEntryController[billEntryCurrentIndex]._quantity,
                 decoration: InputDecoration(
                     labelText: "Quantity",
                     hintText: "Quantity",
@@ -486,7 +556,7 @@ class _BillingPageState extends State<BillingPage> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 onChanged: (value) {},
-                controller: textContr[orderSheetCurrentIndex]._price,
+                controller: billRowEntryController[billEntryCurrentIndex]._price,
                 decoration: InputDecoration(
                     labelText: "Price",
                     hintText: "Price",
@@ -503,7 +573,7 @@ class _BillingPageState extends State<BillingPage> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 onChanged: (value) {},
-                controller: textContr[orderSheetCurrentIndex]._taxPercent,
+                controller: billRowEntryController[billEntryCurrentIndex]._taxPercent,
                 decoration: InputDecoration(
                     labelText: "Tax Percent",
                     hintText: "Tax Percent",
@@ -517,14 +587,14 @@ class _BillingPageState extends State<BillingPage> {
         ],
       ));
     if (globalVariable.editBill) {
-      var _dishName = globalVariable.editableList[orderSheetCurrentIndex]["dish_name"];
-      var _price =  globalVariable.editableList[orderSheetCurrentIndex]["price"];
-      var _taxPercent = globalVariable.editableList[orderSheetCurrentIndex]["tax_percent"];
-      var _quantity = globalVariable.editableList[orderSheetCurrentIndex]["Quantity"];
-      textContr[orderSheetCurrentIndex]._dishName.text = _dishName;
-      textContr[orderSheetCurrentIndex]._price.text = _price;
-      textContr[orderSheetCurrentIndex]._taxPercent.text = _taxPercent;
-      textContr[orderSheetCurrentIndex]._quantity.text = _quantity;
+      var _dishName = globalVariable.editableList[billEntryCurrentIndex]["dish_name"];
+      var _price =  globalVariable.editableList[billEntryCurrentIndex]["price"];
+      var _taxPercent = globalVariable.editableList[billEntryCurrentIndex]["tax_percent"];
+      var _quantity = globalVariable.editableList[billEntryCurrentIndex]["Quantity"];
+      billRowEntryController[billEntryCurrentIndex]._dishName.text = _dishName;
+      billRowEntryController[billEntryCurrentIndex]._price.text = _price;
+      billRowEntryController[billEntryCurrentIndex]._taxPercent.text = _taxPercent;
+      billRowEntryController[billEntryCurrentIndex]._quantity.text = _quantity;
     }
     print("After adding ");
     print("After set state");
