@@ -222,6 +222,7 @@ class _AddRestaurantList extends State<AddRestaurantList> {
   }
   _moveToBillingPage()  {
     print("Pressed Restaurant Button: " + globalVariable.currentRestaurantName);
+    globalVariable.editBill = false;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         // Add 20 lines from here...

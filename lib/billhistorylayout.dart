@@ -1,5 +1,7 @@
+import 'package:billingappui/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:billingappui/global_variables.dart';
 
 class ListItem extends StatefulWidget {
   List billItems;
@@ -14,6 +16,7 @@ class ListItem extends StatefulWidget {
 
 class ListItemState extends State<ListItem> {
   bool isExpand = false;
+  List billList = List();
   @override
   void initState() {
     // TODO: implement initState
@@ -23,7 +26,7 @@ class ListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
-    List billList = this.widget.billItems;
+    billList = this.widget.billItems;
     return Padding(
       padding: (isExpand == true)
           ? const EdgeInsets.all(8.0)
@@ -435,8 +438,8 @@ class ListItemState extends State<ListItem> {
     );
   }
   _expandableRowWidget(String customerID,String timestamp, String customerName, String tableName) {
-    var utcDateTimeTimestamp = DateTime.parse(timestamp);
-    var localTimestamp = utcDateTimeTimestamp;
+    var utcDateTimeTimestamp = DateTime.parse(timestamp+'Z');
+    var localTimestamp = utcDateTimeTimestamp.toLocal();
     String formattedTime = DateFormat('kk:mm:ss').format(localTimestamp);
     String formattedDate = DateFormat('EEE d MMM y').format(localTimestamp);
     return Row(
@@ -487,6 +490,11 @@ class ListItemState extends State<ListItem> {
 
   }
   _editBillEntry() {
+
+
+    globalVariable.editableList = billList;
+    globalVariable.editBill = true;
+    Navigator.of(context).pop();
     print("Edit button pressed");
   }
 

@@ -83,6 +83,7 @@ class Bill {
 class _BillingPageState extends State<BillingPage> {
   List<Widget> _orderSheet;
   Bill currentBill;
+  String submitEditBillUUID = "";
   TextEditingController customerNameCntr;
   TextEditingController tableNameCntr;
 
@@ -100,25 +101,56 @@ class _BillingPageState extends State<BillingPage> {
     _orderSheet.clear();
     textContr.clear();
     _add();
+    setState(() {
+
+    });
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _add();
+    setState(() {
+
+    });
   }
-  _historyOfBillsPage()  {
+  _historyOfBillsPage() async {
     print("History of Bill for Restaurant: " + globalVariable.currentRestaurantName + " button pressed");
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    await  Navigator.of(context).push(
+       MaterialPageRoute<void>(
         // Add 20 lines from here...
           builder: (BuildContext context) => BillHistoryPage()
       ),
     );
+    if (globalVariable.editBill) {
+      print("need to edit this bill");
+      print(globalVariable.editableList);
+      //customerNameCntr.text = "came back editing";
+      _setEditFields();
+      var FIRSTELEMENT = 0;
+      submitEditBillUUID = globalVariable.editableList[FIRSTELEMENT]["uuid"];
+      print("submitEditBillUUID $submitEditBillUUID");
+      globalVariable.editBill = false;
+      globalVariable.editableList.clear();
 
-    print('push move to restaurant Page Button' );
+      setState(() {
+
+      });
+    }
+
+     print("Bill History page popped");
   }
+  _setEditFields() {
+    customerNameCntr.clear();
+    tableNameCntr.clear();
+    _orderSheet.clear();
+    textContr.clear();
 
+    for (int i = 0; i < globalVariable.editableList.length; i++) {
+      _add();
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,9 +168,11 @@ class _BillingPageState extends State<BillingPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.blue,
-        onPressed: _add,
+        onPressed: () { _add(); setState(() {});},
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
         child: RaisedButton(
           color: Colors.green,
           onPressed: _sendBillToServer,
@@ -159,7 +193,11 @@ class _BillingPageState extends State<BillingPage> {
     currentBill.RestaurantName = globalVariable.currentRestaurantName;
     currentBill.CustomerName = customerNameCntr.text;
     currentBill.TableName = tableNameCntr.text;
-    currentBill.UUID = Uuid().v1();
+    if (submitEditBillUUID != "") {
+      currentBill.UUID = submitEditBillUUID;
+    } else {
+      currentBill.UUID = Uuid().v1();
+    }
     var i = 0;
     for (var entry in textContr) {
       var _dishEntry = DishEntry();
@@ -176,6 +214,7 @@ class _BillingPageState extends State<BillingPage> {
     var validator = await _addBillApiCall(currentBill);
     if (validator.result) {
       print("add bill Success");
+      submitEditBillUUID = "";
       _showDialog("Add Bill to Server", "SUCCESS");
       _reInit();
     } else {
@@ -213,38 +252,62 @@ class _BillingPageState extends State<BillingPage> {
     String errStr = "";
     var isValid = true;
     print("validateLastBillEntry: Index: " + index.toString() );
+    var _dishName = textContr[index]._dishName.text;
     var _quantity = textContr[index]._quantity.text;
     var _price = textContr[index]._price.text;
     var _taxPercent = textContr[index]._taxPercent.text;
     print(" Quantity " + _quantity + " Price " + _price + " Tax Percent " + _taxPercent);
-    if (!isInt(_quantity)) {
-      errStr += "Quantity should be a number: \n";
+    if (_dishName == "") {
+      errStr += "Dish Name cannot be empty: \n";
       isValid = false;
-    } else {
-      var qn = int.parse(_quantity);
-      if (qn.isNegative) {
-        errStr += "Quantity cannot be negative";
-        isValid = false;
-      }
     }
-    if (!isFloat(_price)) {
-      errStr += "Price should be a number: \n";
+    if (_quantity == "") {
+      errStr += "Quantity cannot be empty: \n";
       isValid = false;
-    } else {
-      var pn = double.parse(_price);
-      if (pn.isNegative) {
-        errStr += "Price cannot be negative";
-        isValid = false;
-      }
     }
-    if (!isFloat(_taxPercent)) {
-      errStr += "Tax Percent should be a number: \n";
+    if (_price == "") {
+      errStr += "Price cannot be empty: \n";
       isValid = false;
-    } else {
-      var tn = double.parse(_taxPercent);
-      if (tn.isNegative) {
-        errStr += "Tax Percent cannot be negative";
+    }
+    if (_taxPercent == "") {
+      errStr += "Tax Percent cannot be empty: \n";
+      isValid = false;
+    }
+
+    if (isValid) {
+      if (!isInt(_quantity)) {
+        errStr += "Quantity should be a number: \n";
         isValid = false;
+      } else {
+        var qn = int.parse(_quantity);
+        if (qn.isNegative) {
+          errStr += "Quantity cannot be negative\n";
+          isValid = false;
+        }
+      }
+      if (!isFloat(_price)) {
+        errStr += "Price should be a number: \n";
+        isValid = false;
+      } else {
+        var pn = double.parse(_price);
+        if (pn.isNegative) {
+          errStr += "Price cannot be negative\n";
+          isValid = false;
+        }
+      }
+      if (!isFloat(_taxPercent)) {
+        errStr += "Tax Percent should be a number: \n";
+        isValid = false;
+      } else {
+        var tn = double.parse(_taxPercent);
+        if (tn.isNegative) {
+          errStr += "Tax Percent cannot be negative\n";
+          isValid = false;
+        }
+        if (tn > 100.00) {
+          errStr += "Tax Percent cannot be greater than 100 percent\n";
+          isValid = false;
+        }
       }
     }
     if (isValid) {
@@ -369,7 +432,14 @@ class _BillingPageState extends State<BillingPage> {
               flex: 5,
             ),
           ],
-        ));
+        )
+        );
+      if (globalVariable.editBill) {
+        tableNameCntr.text =
+        globalVariable.editableList[orderSheetCurrentIndex]["table_name"];
+        customerNameCntr.text =
+        globalVariable.editableList[orderSheetCurrentIndex]["customer_name"];
+      }
     }
     _orderSheet = List.from(_orderSheet)
       ..add(Row(
@@ -446,8 +516,17 @@ class _BillingPageState extends State<BillingPage> {
           ),
         ],
       ));
+    if (globalVariable.editBill) {
+      var _dishName = globalVariable.editableList[orderSheetCurrentIndex]["dish_name"];
+      var _price =  globalVariable.editableList[orderSheetCurrentIndex]["price"];
+      var _taxPercent = globalVariable.editableList[orderSheetCurrentIndex]["tax_percent"];
+      var _quantity = globalVariable.editableList[orderSheetCurrentIndex]["Quantity"];
+      textContr[orderSheetCurrentIndex]._dishName.text = _dishName;
+      textContr[orderSheetCurrentIndex]._price.text = _price;
+      textContr[orderSheetCurrentIndex]._taxPercent.text = _taxPercent;
+      textContr[orderSheetCurrentIndex]._quantity.text = _quantity;
+    }
     print("After adding ");
-    setState(() {});
     print("After set state");
   }
 }
