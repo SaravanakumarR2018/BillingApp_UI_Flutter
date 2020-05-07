@@ -1,3 +1,4 @@
+import 'package:billingappui/billHistory.dart';
 import 'package:billingappui/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -25,12 +26,14 @@ class DishEntry {
   double Tax;
   double TaxPercent;
   int Quantity;
+  int Index;
   Map<String, dynamic> toJson() => {
         'DishName': DishName,
         'Price': Price,
         'TaxPercent': TaxPercent,
         'Tax': Tax,
-        'Quantity': Quantity
+        'Quantity': Quantity,
+        'Index': Index
       };
 }
 
@@ -51,6 +54,8 @@ class Bill {
   String Email;
   String RestaurantName;
   String UUID;
+  String CustomerName;
+  String TableName;
   List<DishEntry> DishRows;
   Bill() {
     DishRows = List<DishEntry>();
@@ -65,6 +70,8 @@ class Bill {
       'Email': Email,
       'RestaurantName': RestaurantName,
       'UUID': UUID,
+      'CustomerName': CustomerName,
+      'TableName': TableName,
       'DishRows': dishrows
     };
 
@@ -76,13 +83,20 @@ class Bill {
 class _BillingPageState extends State<BillingPage> {
   List<Widget> _orderSheet;
   Bill currentBill;
+  TextEditingController customerNameCntr;
+  TextEditingController tableNameCntr;
+
   List<BillTextController> textContr;
 
   _BillingPageState() {
     _orderSheet = List<Widget>();
     textContr = List<BillTextController>();
+    customerNameCntr = TextEditingController();
+    tableNameCntr = TextEditingController();
   }
   _reInit() {
+    customerNameCntr.clear();
+    tableNameCntr.clear();
     _orderSheet.clear();
     textContr.clear();
     _add();
@@ -93,9 +107,18 @@ class _BillingPageState extends State<BillingPage> {
     super.initState();
     _add();
   }
-  __historyOfBills() {
-    _showDialog("Bill History for Restaurant: " + globalVariable.currentRestaurantName, "Will be available in next release");
+  _historyOfBillsPage()  {
+    print("History of Bill for Restaurant: " + globalVariable.currentRestaurantName + " button pressed");
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        // Add 20 lines from here...
+          builder: (BuildContext context) => BillHistoryPage()
+      ),
+    );
+
+    print('push move to restaurant Page Button' );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +126,7 @@ class _BillingPageState extends State<BillingPage> {
         title: Text('Restarant: ' + globalVariable.currentRestaurantName),
         actions: <Widget>[IconButton(
             icon: Icon(Icons.menu),
-            onPressed: __historyOfBills,
+            onPressed: _historyOfBillsPage,
             )
         ],
       ),
@@ -134,7 +157,10 @@ class _BillingPageState extends State<BillingPage> {
     Bill currentBill = Bill();
     currentBill.Email = globalVariable.currentEmail;
     currentBill.RestaurantName = globalVariable.currentRestaurantName;
+    currentBill.CustomerName = customerNameCntr.text;
+    currentBill.TableName = tableNameCntr.text;
     currentBill.UUID = Uuid().v1();
+    var i = 0;
     for (var entry in textContr) {
       var _dishEntry = DishEntry();
 
@@ -142,6 +168,8 @@ class _BillingPageState extends State<BillingPage> {
       _dishEntry.Quantity = int.parse(entry._quantity.text);
       _dishEntry.Price = double.parse(entry._price.text);
       _dishEntry.TaxPercent = double.parse(entry._taxPercent.text);
+      _dishEntry.Index = i;
+      i++;
       currentBill.DishRows.add(_dishEntry);
     }
 
@@ -301,6 +329,48 @@ class _BillingPageState extends State<BillingPage> {
     print('After Adding');
     int orderSheetCurrentIndex = textContr.length - 1;
     print('before adding to order sheet');
+    if (orderSheetCurrentIndex == 0) {
+      _orderSheet = List.from(_orderSheet)
+        ..add(Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {},
+                  controller: customerNameCntr,
+                  decoration: InputDecoration(
+                      labelText: "Customer Name",
+                      hintText: "Optional: Customer Name",
+                      //prefixIcon: Icon(Icons.room_service),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+                ),
+              ),
+              flex: 7,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {},
+                  controller: tableNameCntr,
+                  decoration: InputDecoration(
+                      labelText: "Table Name",
+                      hintText: "Optional: Table Name",
+                      //prefixIcon: Icon(Icons.room_service),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+                ),
+              ),
+              flex: 5,
+            ),
+          ],
+        ));
+    }
     _orderSheet = List.from(_orderSheet)
       ..add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
