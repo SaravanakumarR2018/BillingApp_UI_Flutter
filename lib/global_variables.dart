@@ -9,4 +9,14 @@ class globalVariable {
   static var appTitle = 'Your Billing App';
   static List editableList = new List();
   static bool editBill = false;
+  static String submitEditBillUUID = "";
+}
+
+resetGlobals() {
+  print("Global Variables Reset");
+  globalVariable.currentEmail = "";
+  globalVariable.currentRestaurantName = "";
+  globalVariable.editableList.clear();
+  globalVariable.editBill = false;
+  globalVariable.submitEditBillUUID = "";
 }

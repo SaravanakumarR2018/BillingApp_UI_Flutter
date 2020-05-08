@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'billhistorylayout.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:billingappui/logout.dart';
 
 void main() => runApp(BillHistory());
 
@@ -129,7 +130,19 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text(globalVariable.appTitle),
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            tooltip: "Logout",
+            onPressed: () {
+              print("addRestaurantList: logout icon is pressed");
+              logout_handler(context);
+            },
+          ),
+        ],
       ),
+
       body: Center(
 
           child: ListView(

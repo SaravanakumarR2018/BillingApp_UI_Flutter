@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:billingappui/logout.dart';
 class BillingPage extends StatefulWidget {
   @override
   _BillingPageState createState() => _BillingPageState();
@@ -86,7 +86,6 @@ class _BillingPageState extends State<BillingPage> {
   List<Widget> _orderSheet;
   List<BillTextController> billRowEntryController;
   Bill currentBill;
-  String submitEditBillUUID = "";
   TextEditingController customerNameCntr;
   TextEditingController tableNameCntr;
   String header = "New Bill";
@@ -130,8 +129,9 @@ class _BillingPageState extends State<BillingPage> {
       //customerNameCntr.text = "came back editing";
       _setEditFields();
       var FIRSTELEMENT = 0;
-      submitEditBillUUID = globalVariable.editableList[FIRSTELEMENT]["uuid"];
-      print("submitEditBillUUID $submitEditBillUUID");
+      globalVariable.submitEditBillUUID = globalVariable.editableList[FIRSTELEMENT]["uuid"];
+      print("submitEditBillUUID");
+      print(globalVariable.submitEditBillUUID);
       globalVariable.editBill = false;
       header = "Edit Bill: " + globalVariable.editableList[FIRSTELEMENT]["customer_id"];
       globalVariable.editableList.clear();
@@ -186,7 +186,17 @@ class _BillingPageState extends State<BillingPage> {
       appBar: AppBar(
         title: Text(globalVariable.currentRestaurantName + ": " + header),
         backgroundColor: Colors.green,
-        actions: <Widget>[IconButton(
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            tooltip: "Logout",
+            onPressed: () {
+              print("addRestaurantList: logout icon is pressed");
+              logout_handler(context);
+            },
+          ),
+        IconButton(
             icon: Icon(Icons.menu),
             onPressed: _historyOfBillsPage,
             )
@@ -263,8 +273,8 @@ class _BillingPageState extends State<BillingPage> {
     currentBill.RestaurantName = globalVariable.currentRestaurantName;
     currentBill.CustomerName = customerNameCntr.text;
     currentBill.TableName = tableNameCntr.text;
-    if (submitEditBillUUID != "") {
-      currentBill.UUID = submitEditBillUUID;
+    if (globalVariable.submitEditBillUUID != "") {
+      currentBill.UUID = globalVariable.submitEditBillUUID;
     } else {
       currentBill.UUID = Uuid().v1();
     }
@@ -284,7 +294,7 @@ class _BillingPageState extends State<BillingPage> {
     var validator = await _addBillApiCall(currentBill);
     if (validator.result) {
       print("add bill Success");
-      submitEditBillUUID = "";
+      globalVariable.submitEditBillUUID = "";
       header = "Add Bill";
       _showDialog("Save Bill to Server", "SUCCESS\n\n\nCheck saved Bills using the top right button");
       _reInit();

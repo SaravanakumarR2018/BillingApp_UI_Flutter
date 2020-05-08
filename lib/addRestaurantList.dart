@@ -1,3 +1,4 @@
+import 'package:billingappui/logout.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -41,6 +42,17 @@ class _AddRestaurantList extends State<AddRestaurantList> {
       appBar: AppBar(
         title: Text(globalVariable.currentEmail),
         backgroundColor: Colors.green,
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            tooltip: "Logout",
+            onPressed: () {
+              print("addRestaurantList: logout icon is pressed");
+              logout_handler(context);
+            },
+          ),
+        ],
       ),
       body: _getRestaurantListWidgetWithTextBox(),
     );
