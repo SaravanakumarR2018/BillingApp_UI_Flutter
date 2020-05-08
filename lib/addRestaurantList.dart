@@ -259,14 +259,14 @@ class _AddRestaurantList extends State<AddRestaurantList> {
         print("Success from Server: 200: ");
         returnValue =  success;
       } else {
-        restaurantList = json.decode('[{"' + restaurantNameJSONField + '": "No Restaurants available: Add new from the text box"}]');
+        restaurantList = json.decode('[]');
         print("Failure from Server: Restaurant list");
         returnValue =  failure;
       }
     } catch(e) {
       print("Inside Catch block");
       print(e);
-      restaurantList = json.decode('[{"' + restaurantNameJSONField + '": "Issue with Server Connectivity"}]');
+      restaurantList = json.decode('[]');
       print("Error Exception from Server: Restaurant list");
       returnValue = failure;
     }
