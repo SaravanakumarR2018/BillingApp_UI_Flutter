@@ -10,9 +10,12 @@ class globalVariable {
   static String loginUrl = restaurantUrl + 'login';
   static String forgotPasswordUrl = restaurantUrl + 'forgotPassword';
   static String resetPasswordUrl = restaurantUrl + 'resetPassword';
+  static String signUpUrl = restaurantUrl + 'signup';
   static var httpStatusOk = 200;
   static var httpStatusNotFound = 404;
   static var httpStatusUnauthorized = 401;
+  static var httpStatusNoContent = 204;
+  static var httpStatusUnProcessableEntity = 422;
   static var appTitle = 'Your Billing App';
   static List editableList = new List();
   static bool editBill = false;

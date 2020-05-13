@@ -21,6 +21,21 @@ enum loginStatus {
   exception,
   unKnown
 }
+enum forgotPasswordStatus {
+  newPasswordSent,
+  accountNonExistant,
+  timeout,
+  exception,
+  unKnown
+}
+
+enum signUpStatus {
+  newPasswordSent,
+  accountAlreadyPresent,
+  timeout,
+  exception,
+  unKnown
+}
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   final emailController = TextEditingController();
@@ -102,8 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _forgotPasswordButtonPressed() {
     print("_pressForgotPasswordButton Forgot password button pressed");
-
-    _showEmailDialog("Enter your mail for New Password", "SEND", emailController.text);
+    _showEmailDialog("Enter your mail for New Password", "SEND", emailController.text, _sendNewPasswordForForgotPassword);
   }
   Widget _buildForgotPasswordBtn() {
     return Container(
@@ -180,19 +194,28 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       print("Login Failure: throw appropriate message");
       if (loginst == loginStatus.passwordFailure) {
-        String dialogStr = "click on ForgotPassword link to recover password";
-        _showDialog("Wrong: Email Or Password", dialogStr);
+        String dialogStr = "Password: Invalid";
+        _showDialog("Password: Invalid", "Recover password using Forgot Password");
       } else if (loginst == loginStatus.userNotPresent) {
-        String dialogStr = "click on Sign Up if you are a new user \n"
-            "Click on ForgotPassword link to recover password";
-        _showDialog("Wrong: Email Or Password", dialogStr);
+        String dialogStr = "Use Sign Up";
+        _showDialog("Non existant account", dialogStr);
       } else {
-        String dialogStr = "Try SignIn after sometime";
+        String dialogStr = "Try after sometime";
         _showDialog("Login: Error", dialogStr);
       }
     }
   }
-  _sendNewPassword() {
+  _sendNewPasswordForSignUp() {
+    var email = emailDialogController.text;
+    var isValidEmail = isEmail(email);
+    if (!isValidEmail) {
+      print("_sendNewPasswordForSignUp: Email not valid: " + email);
+      _showDialog("Email Invalid", email);
+      return;
+    }
+    _signUpApiCall(email).then(_signUpResultHandler);
+  }
+  _sendNewPasswordForForgotPassword() {
     var email = emailDialogController.text;
     var isValidEmail = isEmail(email);
     if (!isValidEmail) {
@@ -202,21 +225,74 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     _forgotPasswordApiCall(email).then(_forgotPasswordResultHandler);
   }
-  _forgotPasswordResultHandler(result) {
-    print("_forgotPasswordResultHandler: obtained result "+ result.toString());
+  _signUpResultHandler(result) {
+    print("_signUpResultHandler: obtained result "+ result.toString());
     Navigator.of(context).pop();
-    if (!result) {
-      print("_forgotPasswordResultHandler: Failure sending password: ");
-
-      _showDialog("Password Send: Failure", "Try after sometime");
+    if (result == signUpStatus.newPasswordSent) {
+      print("_signUpResultHandler: New password sent to email");
+      _showDialog("New Password generated", "Check email for new password");
       return;
+    } else if (result == signUpStatus.accountAlreadyPresent) {
+      print("_signUpResultHandler: Email id already present");
+      _showDialog("Account present in system", "Use Forgot Password to recover account");
     } else {
-      _showDialog("Password Send: Success", "Check email for new password");
+      print("_signUpResultHandler: Error sending new password");
+      _showDialog("Account Sign Up: Failure", "Try after sometime");
       return;
     }
   }
+  _forgotPasswordResultHandler(result) {
+    print("_forgotPasswordResultHandler: obtained result "+ result.toString());
+    Navigator.of(context).pop();
+    if (result == forgotPasswordStatus.newPasswordSent) {
+      print("_forgotPasswordResultHandler: New password sent to email");
+      _showDialog("New Password generated", "Check email for new password");
+      return;
+    } else if (result == forgotPasswordStatus.accountNonExistant) {
+      print("_forgotPasswordResultHandler: Email id non existant");
+      _showDialog("Account not present in system", "Use Sign Up");
+    } else {
+      print("_forgotPasswordResultHandler: Error sending new password");
+      _showDialog("Account Password Reset: Failure", "Try after sometime");
+      return;
+    }
+  }
+  _signUpApiCall(String email) async {
+    var returnValue = signUpStatus.unKnown;
+
+    print("_signUpApiCall: " + globalVariable.signUpUrl + " email: " + email);
+    try {
+      print("_signUpApiCall: Entering try block");
+      var response = await http.get(
+        //encode the url
+          Uri.encodeFull(globalVariable.signUpUrl),
+          headers: {"Accept": "application/json",
+            "Content-type":"application/json",
+            "Email": email}
+      ).timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == globalVariable.httpStatusOk) {
+        print("_signUpApiCall: Password Sent for email " + email);
+        returnValue = signUpStatus.newPasswordSent;
+      } else if (response.statusCode == globalVariable.httpStatusUnProcessableEntity) {
+        print("_signUpApiCall: Email id already presentt" + email);
+        returnValue = signUpStatus.accountAlreadyPresent;
+      } else {
+        print("_signUpApiCall: FAILURE: Password Send to email " + email);
+        returnValue = signUpStatus.unKnown;
+      }
+    } on TimeoutException catch (e) {
+      print ("_signUpApiCall: TIMEOUT FAILURE: CHECK INTERNET CONNECTION:\n");
+      returnValue = signUpStatus.timeout;
+    } catch(e) {
+      print("_signUpApiCall: Exception occured " + e);
+      returnValue = signUpStatus.exception;
+    }
+    print("_signUpApiCall: Return value " + returnValue.toString());
+    return returnValue;
+  }
   _forgotPasswordApiCall(String email) async {
-    var returnValue = false;
+    var returnValue = forgotPasswordStatus.unKnown;
 
     print("_forgotPasswordApiCall: " + globalVariable.forgotPasswordUrl + " email: " + email);
     try {
@@ -231,22 +307,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == globalVariable.httpStatusOk) {
         print("_forgotPasswordApiCall: Password Sent for email " + email);
-        returnValue = true;
+        returnValue = forgotPasswordStatus.newPasswordSent;
+      } else if (response.statusCode == globalVariable.httpStatusNoContent) {
+        print("_forgotPasswordApiCall: Email id Non existent" + email);
+        returnValue = forgotPasswordStatus.accountNonExistant;
       } else {
         print("_forgotPasswordApiCall: FAILURE: Password Send to email " + email);
-        returnValue = false;
+        returnValue = forgotPasswordStatus.unKnown;
       }
     } on TimeoutException catch (e) {
       print ("_forgotPasswordApiCall: TIMEOUT FAILURE: CHECK INTERNET CONNECTION:\n");
-      returnValue = false;
+      returnValue = forgotPasswordStatus.timeout;
     } catch(e) {
       print("_forgotPasswordApiCall: Exception occured " + e);
-      returnValue = false;
+      returnValue = forgotPasswordStatus.exception;
     }
     print("_forgotPasswordApiCall: Return value " + returnValue.toString());
     return returnValue;
   }
-  void _showEmailDialog(String title, String textButtonName, String emailText) {
+  void _showEmailDialog(String title, String textButtonName, String emailText,
+      operatingFn) {
 
     emailDialogController.text = emailText;
     showDialog(
@@ -269,7 +349,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text(textButtonName),
-              onPressed: _sendNewPassword,
+              onPressed: operatingFn,
             ),
           ],
         );
@@ -394,7 +474,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   _signUpButtonPressed() {
     print("Sign Up Button Pressed");
-    _showEmailDialog("SignUp with your mail for New Password", "SEND", emailController.text);
+    _showEmailDialog("SignUp with your mail for New Password", "SEND",
+        emailController.text, _sendNewPasswordForSignUp);
 
   }
   Widget _buildSignupBtn() {
@@ -456,7 +537,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print("_loginApiCall: email and password unauthorized " + email);
         returnValue = loginStatus.passwordFailure;
         globalVariable.token = "";
-      } else if (response.statusCode == globalVariable.httpStatusNotFound) {
+      } else if (response.statusCode == globalVariable.httpStatusNoContent) {
         print("_loginApiCall: email not found in system " + email);
         returnValue = loginStatus.userNotPresent;
         globalVariable.token = "";
