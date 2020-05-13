@@ -4,6 +4,7 @@ import 'billhistorylayout.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:billingappui/logout.dart';
+import 'package:billingappui/resetpassword.dart';
 
 void main() => runApp(BillHistory());
 
@@ -141,6 +142,22 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
               logout_handler(context);
             },
           ),
+          PopupMenuButton(
+            onSelected: (result) { setState(() {
+              if (result == "RESETPASSWORD12345") {
+                print("Reset Password button pressed");
+                resetPassword(context);
+              } else {
+                print("Unknown value pressed");
+              }
+            }); },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: "RESETPASSWORD12345",
+                child: Text('Reset Password'),
+              )
+            ],
+          )
         ],
       ),
 

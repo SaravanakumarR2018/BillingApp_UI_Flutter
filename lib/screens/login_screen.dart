@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print("_forgotPasswordApiCall: Exception occured " + e);
       returnValue = false;
     }
-    print("_loginApiCall: Return value " + returnValue.toString());
+    print("_forgotPasswordApiCall: Return value " + returnValue.toString());
     return returnValue;
   }
   void _showEmailDialog(String title, String textButtonName, String emailText) {
@@ -275,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       },
     );
-    
+
   }
   void _showDialog(String title, String validationErrString) {
     // flutter defined function
@@ -427,7 +427,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<dynamic> _loginApiCall(String email, password) async {
     var returnValue = loginStatus.unKnown;
-    var tokenKey = "token";
+
     print("_loginApiCall: login" + globalVariable.loginUrl + " email: " + email);
     try {
       print("_loginApiCall: Entering try block");
@@ -443,13 +443,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == globalVariable.httpStatusOk) {
         print("_loginApiCall: email and password matched: " + email);
         Map tokenMap = json.decode(response.body);
-        if (!tokenMap.containsKey(tokenKey)) {
+        if (!tokenMap.containsKey(globalVariable.tokenKey)) {
           print("_loginApiCall: authorization token not present in Reply" +
               email);
           returnValue = loginStatus.noToken;
           globalVariable.token = "";
         } else {
-          globalVariable.token = tokenMap[tokenKey];
+          globalVariable.token = tokenMap[globalVariable.tokenKey];
           returnValue = loginStatus.authorizationSuccess;
         }
       } else if (response.statusCode == globalVariable.httpStatusUnauthorized) {

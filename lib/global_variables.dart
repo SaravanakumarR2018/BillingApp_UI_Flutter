@@ -18,6 +18,7 @@ class globalVariable {
   static bool editBill = false;
   static String submitEditBillUUID = "";
   static String token = "";
+  static String tokenKey = "token";
 }
 
 resetGlobals() {

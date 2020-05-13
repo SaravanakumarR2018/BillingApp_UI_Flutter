@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:billingappui/global_variables.dart';
 import 'package:billingappui/billingPage.dart';
+import 'package:billingappui/resetpassword.dart';
 
 
 class AddRestaurantList extends StatefulWidget {
@@ -38,6 +39,7 @@ class _AddRestaurantList extends State<AddRestaurantList> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(globalVariable.currentEmail),
@@ -52,6 +54,22 @@ class _AddRestaurantList extends State<AddRestaurantList> {
               logout_handler(context);
             },
           ),
+          PopupMenuButton(
+            onSelected: (result) { setState(() {
+              if (result == "RESETPASSWORD12345") {
+                print("Reset Password button pressed");
+                resetPassword(context);
+              } else {
+                print("Unknown value pressed");
+              }
+            }); },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: "RESETPASSWORD12345",
+                child: Text('Reset Password'),
+              )
+            ],
+          )
         ],
       ),
       body: _getRestaurantListWidgetWithTextBox(),
