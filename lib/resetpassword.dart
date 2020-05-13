@@ -30,6 +30,7 @@ void _showResetPasswordDialog(context) {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: resetPwdGlobals.currentPasswordController,
+                    obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Current Password",
                       hintText: "Current Password",
@@ -42,6 +43,7 @@ void _showResetPasswordDialog(context) {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: resetPwdGlobals.newPasswordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                       labelText: "New Password",
                       hintText: "New Password",
@@ -54,6 +56,7 @@ void _showResetPasswordDialog(context) {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: resetPwdGlobals.confirmNewPasswordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                       labelText: "Confirm New Password",
                       hintText: "Confirm New Password",
