@@ -44,7 +44,8 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           headers: {
             "Email": globalVariable.currentEmail,
             "RestaurantName": globalVariable.currentRestaurantName,
-            "Accept": "application/json"}
+            "Accept": "application/json",
+            "Authorization": globalVariable.token}
       );
 
       if (response.statusCode == globalVariable.httpStatusOk) {

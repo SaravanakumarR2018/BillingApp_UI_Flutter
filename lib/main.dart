@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Login UI',
+      title: 'Free Billing App',
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),
       theme: ThemeData(

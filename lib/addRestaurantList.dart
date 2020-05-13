@@ -224,7 +224,10 @@ class _AddRestaurantList extends State<AddRestaurantList> {
         //encode the url
         Uri.encodeFull(globalVariable.addRestaurantURL),
         //only accept json response
-        headers: {"Accept": "application/json", "Content-type":"application/json"},
+        headers: {
+          "Accept": "application/json",
+          "Content-type":"application/json",
+          "Authorization": globalVariable.token},
         body: jsonEncode(<String, String>{
           'Email': globalVariable.currentEmail,
           'RestaurantName': newRestaurant
@@ -251,7 +254,10 @@ class _AddRestaurantList extends State<AddRestaurantList> {
         //encode the url
           Uri.encodeFull(url),
           //only accept json response
-          headers: {"Email": email, "Accept": "application/json"}
+          headers: {
+            "Email": email,
+            "Accept": "application/json",
+            "Authorization": globalVariable.token}
       );
 
       if (response.statusCode == httpStatusOk) {
@@ -288,6 +294,7 @@ class _AddRestaurantList extends State<AddRestaurantList> {
 
     print('push move to restaurant Page Button' );
   }
+
 
 }
 

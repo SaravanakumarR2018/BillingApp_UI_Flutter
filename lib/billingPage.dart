@@ -422,7 +422,10 @@ class _BillingPageState extends State<BillingPage> {
       var response = await http.post(
           //encode the url
           Uri.encodeFull(globalVariable.addBillUrl),
-          headers: {"Accept": "application/json", "Content-type":"application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Content-type":"application/json",
+            "Authorization": globalVariable.token},
           //only accept json response
           body: jsonEncode(currentBill.toJson())
       ).timeout(const Duration(seconds: 4));
