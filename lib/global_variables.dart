@@ -2,7 +2,7 @@ class globalVariable {
   static String currentEmail;
   static String currentRestaurantName;
   static String domain = 'freebillingapp.com';
-  static String restaurantUrl = 'http://' + domain + '/restaurant/';
+  static String restaurantUrl = 'https://' + domain + '/restaurant/';
   static String restaurantListUrl = restaurantUrl + 'restaurantlist';
   static String addRestaurantURL = restaurantUrl + 'addnewrestaurant';
   static String addBillUrl = restaurantUrl + 'orders';
