@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:billingappui/screens/login_screen.dart';
+import 'package:FreeBillingApp/screens/login_screen.dart';
 
 void main() => runApp(MyApp());
 

@@ -1,11 +1,11 @@
-import 'package:billingappui/logout.dart';
+import 'package:FreeBillingApp/logout.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'package:billingappui/global_variables.dart';
-import 'package:billingappui/billingPage.dart';
-import 'package:billingappui/resetpassword.dart';
+import 'package:FreeBillingApp/global_variables.dart';
+import 'package:FreeBillingApp/billingPage.dart';
+import 'package:FreeBillingApp/resetpassword.dart';
 
 
 class AddRestaurantList extends StatefulWidget {

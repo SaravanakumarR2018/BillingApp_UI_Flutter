@@ -1,7 +1,6 @@
-import 'package:billingappui/global_variables.dart';
+import 'package:FreeBillingApp/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:billingappui/global_variables.dart';
 
 class ListItem extends StatefulWidget {
   List billItems;

@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:billingappui/billHistory.dart';
-import 'package:billingappui/global_variables.dart';
+import 'package:FreeBillingApp/billHistory.dart';
+import 'package:FreeBillingApp/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:billingappui/logout.dart';
-import 'package:billingappui/resetpassword.dart';
+import 'package:FreeBillingApp/logout.dart';
+import 'package:FreeBillingApp/resetpassword.dart';
 class BillingPage extends StatefulWidget {
   @override
   _BillingPageState createState() => _BillingPageState();
@@ -573,8 +573,6 @@ class _BillingPageState extends State<BillingPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                keyboardType: TextInputType.number,
-                onChanged: (value) {},
                 controller: billRowEntryController[billEntryCurrentIndex]._quantity,
                 decoration: InputDecoration(
                     labelText: "Quantity",
@@ -590,8 +588,6 @@ class _BillingPageState extends State<BillingPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                keyboardType: TextInputType.number,
-                onChanged: (value) {},
                 controller: billRowEntryController[billEntryCurrentIndex]._price,
                 decoration: InputDecoration(
                     labelText: "Price",
@@ -607,8 +603,6 @@ class _BillingPageState extends State<BillingPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                keyboardType: TextInputType.number,
-                onChanged: (value) {},
                 controller: billRowEntryController[billEntryCurrentIndex]._taxPercent,
                 decoration: InputDecoration(
                     labelText: "Tax Percent",

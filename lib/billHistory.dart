@@ -1,10 +1,10 @@
-import 'package:billingappui/global_variables.dart';
+import 'package:FreeBillingApp/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'billhistorylayout.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:billingappui/logout.dart';
-import 'package:billingappui/resetpassword.dart';
+import 'package:FreeBillingApp/logout.dart';
+import 'package:FreeBillingApp/resetpassword.dart';
 
 void main() => runApp(BillHistory());
 

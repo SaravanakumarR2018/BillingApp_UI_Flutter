@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:billingappui/utilities/constants.dart';
-import 'package:billingappui/global_variables.dart';
-import 'package:billingappui/addRestaurantList.dart';
+import 'package:FreeBillingApp/utilities/constants.dart';
+import 'package:FreeBillingApp/global_variables.dart';
+import 'package:FreeBillingApp/addRestaurantList.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
