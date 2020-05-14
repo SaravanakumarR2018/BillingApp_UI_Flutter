@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _forgotPasswordButtonPressed() {
     print("_pressForgotPasswordButton Forgot password button pressed");
-    _showEmailDialog("Enter your mail for New Password", "SEND", emailController.text, _sendNewPasswordForForgotPassword);
+    _showEmailDialog("Enter your mail for New Password", "SEND", emailController.text.trim(), _sendNewPasswordForForgotPassword);
   }
   Widget _buildForgotPasswordBtn() {
     return Container(
@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _pushLoginButtonWidget() async {
-    var email = emailController.text;
+    var email = emailController.text.trim();
     var result = isEmail(email);
     if (!result){
       print("_pushLoginButtonWidget: Not a valid email: " + email);
@@ -475,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _signUpButtonPressed() {
     print("Sign Up Button Pressed");
     _showEmailDialog("SignUp with your mail for New Password", "SEND",
-        emailController.text, _sendNewPasswordForSignUp);
+        emailController.text.trim(), _sendNewPasswordForSignUp);
 
   }
   Widget _buildSignupBtn() {

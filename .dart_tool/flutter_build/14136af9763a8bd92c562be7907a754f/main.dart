@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:billingappui/main.dart' as entrypoint;
+import 'package:FreeBillingApp/main.dart' as entrypoint;
 
 Future<void> main() async {
   if (true) {
