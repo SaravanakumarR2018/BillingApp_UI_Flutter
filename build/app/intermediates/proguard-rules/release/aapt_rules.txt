@@ -1,0 +1,6 @@
+# Referenced at /Users/sarvanakumar/AndroidStudioProjects/billinapp_github/BillingApp_UI_Flutter/build/app/intermediates/merged_manifests/release/AndroidManifest.xml:19
+-keep class androidx.core.app.CoreComponentFactory { <init>(); }
+# Referenced at /Users/sarvanakumar/AndroidStudioProjects/billinapp_github/BillingApp_UI_Flutter/build/app/intermediates/merged_manifests/release/AndroidManifest.xml:24
+-keep class com.learning.billingappui.MainActivity { <init>(); }
+# Referenced at /Users/sarvanakumar/AndroidStudioProjects/billinapp_github/BillingApp_UI_Flutter/build/app/intermediates/merged_manifests/release/AndroidManifest.xml:19
+-keep class io.flutter.app.FlutterApplication { <init>(); }

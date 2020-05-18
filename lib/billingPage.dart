@@ -241,6 +241,7 @@ class _BillingPageState extends State<BillingPage> {
               heroTag: "deleteRow",
               backgroundColor: Colors.green,
               child: Icon(Icons.delete),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
             ),
             FloatingActionButton.extended(
               onPressed: _sendBillToServer,
@@ -254,6 +255,7 @@ class _BillingPageState extends State<BillingPage> {
               heroTag: "AddRowsToBill",
               backgroundColor: Colors.green,
               child: Icon(Icons.add),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
             )
           ],
         ),
